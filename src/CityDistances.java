@@ -3,10 +3,14 @@ import java.sql.Time;
 import java.util.*;
 
 public class CityDistances {
-	ArrayList<String> cityList = new ArrayList<String>();
-	HashMap<String, String> closeCities = new HashMap<String, String>(); 
+	private ArrayList<String> cityList = new ArrayList<String>();
+	private HashMap<String, String> closeCities = new HashMap<String, String>(); 
 	private String currentLine;
 	private static final int MAX_HOURS = 6;
+	
+	public HashMap<String, String> getCloseCities(){
+		return closeCities;
+	}
 	
 	private void loadDataFromFile(){
 		try(FileReader fr = new FileReader(new File("../Problem0000/cities1000.txt")); BufferedReader br = new BufferedReader(fr)){
@@ -49,7 +53,7 @@ public class CityDistances {
 				}
 				if(unique){
 					closeCities.put(time + " " + currentLine.split(" ")[1], cityList.get(i).split(" ")[1]);
-					System.out.println(time + " " + currentLine.split(" ")[1] + " " + cityList.get(i).split(" ")[1]);
+//					System.out.println(time + " " + currentLine.split(" ")[1] + " " + cityList.get(i).split(" ")[1]);
 				}
 			}
 		}
