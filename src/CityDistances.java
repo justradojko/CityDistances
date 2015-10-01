@@ -4,13 +4,10 @@ import java.util.*;
 
 public class CityDistances {
 	private ArrayList<String> cityList = new ArrayList<String>();
-	private HashMap<String, String> closeCities = new HashMap<String, String>(); 
+	private HashSet<String> closeCities = new HashSet<String>();
 	private String currentLine;
 	private static final int MAX_HOURS = 6;
-	
-	public HashMap<String, String> getCloseCities(){
-		return closeCities;
-	}
+
 	
 	private void loadDataFromFile(){
 		try(FileReader fr = new FileReader(new File("../Problem0000/cities1000.txt")); BufferedReader br = new BufferedReader(fr)){
@@ -26,13 +23,12 @@ public class CityDistances {
 	}
 	
 	private void analizeCityDistances(int startingPoint){
-		currentLine = cityList.get(startingPoint);
+		currentLine = cityList.get(startingPoint);		
 		int timeDifference;
 		String time;
 		String c0, c1, i0, i1;
-		boolean unique = true;
 		
-		for(int i = startingPoint + 1; i<cityList.size(); i++){
+		for (int i = startingPoint + 1; i < cityList.size(); i++){
 			c0 = currentLine.split(" ")[0];
 			c1 = currentLine.split(" ")[1];
 			i0 = cityList.get(i).split(" ")[0];
@@ -40,20 +36,13 @@ public class CityDistances {
 			
 			timeDifference = calculateTimeDifferenceInMin(c0, i0);
 			time = convertMinToTime( timeDifference);
+			
 			if( timeDifference < MAX_HOURS * 60){
-				if (closeCities.get(time + " " + c1) != null){
-					if (closeCities.get(time + " " + c1).equals(i1)){
-						unique = false;
+				if(!closeCities.contains(time + " " + c1 + " " + i1)){
+					if(!closeCities.contains(time + " " + i1 + " " + c1)){
+						closeCities.add(time + " " + c1 + " " + i1);
+						System.out.println(time + " " + c1 + " " + i1);
 					}
-				}
-				if (closeCities.get(time + " " + i1) != null){
-					if (closeCities.get(time + " " + i1).equals(c1)){
-						unique = false;
-					}
-				}
-				if(unique){
-					closeCities.put(time + " " + currentLine.split(" ")[1], cityList.get(i).split(" ")[1]);
-//					System.out.println(time + " " + currentLine.split(" ")[1] + " " + cityList.get(i).split(" ")[1]);
 				}
 			}
 		}
@@ -64,7 +53,7 @@ public class CityDistances {
 		 
 	}
 		
-	public int calculateTimeDifferenceInMin(String first, String second){
+	private int calculateTimeDifferenceInMin(String first, String second){
 		String[] firstDecons = first.split(":");
 		String[] secondDecons = second.split(":");
 		
@@ -72,7 +61,7 @@ public class CityDistances {
 				       Integer.parseInt(secondDecons[0]) * 60 - Integer.parseInt(secondDecons[1]) ); 
 	}
 	
-	public String convertMinToTime(int mins){
+	private String convertMinToTime(int mins){
 		Time time = new Time(mins * 60000 - 3600000);
 		return time.toString().substring(0, 5);
 	}
@@ -80,7 +69,7 @@ public class CityDistances {
 	public void go(){
 		this.loadDataFromFile();
 		this.analizeCityDistances(0);
-		System.out.println("HashMap size: " + closeCities.size());
+		System.out.println("HashSet size: " + closeCities.size());
 	}
 	
 	
