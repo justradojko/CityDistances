@@ -11,7 +11,7 @@ public class CloseCities {
 	}
 
 	public String getTime() {
-		return time;
+		return time; 
 	}
 
 	public String getFirstCity() {
