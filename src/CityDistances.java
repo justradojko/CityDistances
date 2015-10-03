@@ -35,10 +35,8 @@ public class CityDistances {
 			time = convertMinToTime( Math.abs(currentCity.getTimeInMinutes() - cityList.get(i).getTimeInMinutes() ) );
 						
 			if( ( Math.abs(currentCity.getTimeInMinutes() - cityList.get(i).getTimeInMinutes()) ) < MAX_HOURS * 60){
-				if( !(closeCities.contains( new CloseCities(time, currentCity.getCityName(), cityList.get(i).getCityName())))){
 					closeCities.add(  new CloseCities(time, cityList.get(i).getCityName(), currentCity.getCityName())  );
 					System.out.println(time + " " + cityList.get(i).getCityName() + " " + currentCity.getCityName());
-				}
 			}
 		}
 		

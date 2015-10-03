@@ -2,7 +2,8 @@
 public class CityRecord {
 	private String cityName;
 	private int timeInMinutes;
-	
+
+
 	public CityRecord(String s, int t){
 		cityName = s;
 		timeInMinutes = t;
