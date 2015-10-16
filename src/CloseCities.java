@@ -1,4 +1,15 @@
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="CITY_DISTANCES")
 public class CloseCities {
+	@Id
+	@GeneratedValue(strategy=GenerationType.SEQUENCE)
+	private int id;
 	private String time;
 	private String firstCity;
 	private String secondCity;
@@ -35,6 +46,10 @@ public class CloseCities {
 		return true;
 	}
 
+	public CloseCities(){
+		super();
+	}
+	
 	public CloseCities(String t, String s1, String s2){
 		time = t;
 		firstCity = s1;
@@ -52,4 +67,16 @@ public class CloseCities {
 	public String getSecondCity() {
 		return secondCity;
 	}
+	
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public void setFirstCity(String firstCity) {
+		this.firstCity = firstCity;
+	}
+
+	public void setSecondCity(String secondCity) {
+		this.secondCity = secondCity;
+	}	
 }

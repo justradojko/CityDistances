@@ -2,12 +2,20 @@ import java.io.*;
 import java.sql.Time;
 import java.util.*;
 
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.Transaction;
+
 public class CityDistances {
 	private ArrayList<CityRecord> cityList = new ArrayList<CityRecord>();
 	private HashSet<CloseCities> closeCities = new HashSet<CloseCities>();  
 	private static final int MAX_HOURS = 6;
 
-	private void loadDataFromFile(){
+	private static SessionFactory factory; 
+
+	private void loadDataFromFileAndSort(){
 		try(FileReader fr = new FileReader(new File("../Problem0000/cities1000.txt")); BufferedReader br = new BufferedReader(fr)){
 			String line;
 			while( (line = br.readLine()) != null && line!=""){
@@ -28,8 +36,6 @@ public class CityDistances {
 		}
 		System.out.println("cityList size is: " + cityList.size());
 	}
-	
-	
 	
 	private void analizeCityDistances(){
 		int t;
@@ -56,13 +62,92 @@ public class CityDistances {
 		return time.toString().substring(0, 5);
 	}
 	
+	private void saveDistancesToDB(){
+		Session session = factory.openSession();
+		Transaction tx = null;		
+		try {
+			System.out.println("Writing to DB...");			
+			int i = 0;
+			for (CloseCities element : closeCities) {
+				tx = session.beginTransaction();
+				session.save(element);				
+				i++;
+				if (i>10) break;
+				tx.commit();
+			}						
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally{
+			System.out.println("Closing session...");
+			session.close();
+		}
+	}
+	
+	private void loadDataFromDB() {
+		Session session = factory.openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			String hql = "from CloseCities";
+			Query query = session.createQuery(hql);
+			List<CloseCities> results = query.list();
+			System.out.println("Number of loaded lines from DB: " + results.size());
+			
+			Iterator<CloseCities> iterator = results.iterator();
+			if (iterator.hasNext()) {
+				CloseCities temp = (CloseCities) iterator.next();
+				System.out.println("First first city: " + temp.getFirstCity());
+			}
+			
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally{
+			session.close();
+		}
+	}
+	
+	private boolean deleteEntryByID(int id) {
+		boolean returnB = false;
+		Session session = factory.openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			CloseCities city = (CloseCities) session.get(CloseCities.class, id);
+			session.delete(city);
+			tx.commit();
+			returnB = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally{
+			session.close();
+		}
+		return returnB;
+	}
+	
 	
 	
 	
 	public void go(){
-		this.loadDataFromFile();
+		this.loadDataFromFileAndSort();
 		this.analizeCityDistances();
-		System.out.println("HashSet size: " + closeCities.size());
+		System.out.println("CloseCities sie: " + closeCities.size());
+		
+		try {
+			CityDistances.factory = new Configuration().configure().buildSessionFactory();
+			System.out.println("SessionFactory created");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		/*
+		CODE FOR INTERACTION WITH DB GOES HERE
+		*/
+//		this.saveDistancesToDB();
+//		this.loadDataFromDB();
+		this.deleteEntryByID(2);
+		
+		CityDistances.factory.close();
 	}
 	
 	public static void main(String[] args) {
